@@ -9,3 +9,6 @@ seaborn==0.12.3
 # Machine learning
 scikit-learn==1.3.2
 
+# Video & hand tracking
+mediapipe==1.31.0
+opencv-python==4.9.0.74
