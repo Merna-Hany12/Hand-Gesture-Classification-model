@@ -1,0 +1,22 @@
+artifact_path: file:///c:\Users\merna\Desktop\Hand_Gesture_Classification\mlruns/100510345713560097/models/m-69393cd13286440bb85eb7dfdb406068/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.9.0
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.1.3
+mlflow_version: 3.1.4
+model_id: m-69393cd13286440bb85eb7dfdb406068
+model_size_bytes: 2595915
+model_uuid: m-69393cd13286440bb85eb7dfdb406068
+prompts: null
+run_id: f4ce64a03c7449e7abed2877d68ac32c
+utc_time_created: '2026-02-21 17:43:59.412216'
