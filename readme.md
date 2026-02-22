@@ -29,9 +29,7 @@ This project implements a **hand gesture recognition system** using machine lear
 1. Clone the repository:
 
 ```bash
-git clone <your-repo-url>
-cd <your-project-folder>
-```
+git clone https://github.com/Merna-Hany12/Hand-Gesture-Classification-model.git```
 
 2. Create a virtual environment and activate it (optional but recommended):
 
@@ -52,22 +50,34 @@ pip install -r requirements.txt
 **Example requirements.txt**:
 
 ```
-mediapipe
-opencv-python
-pandas==2.1.1
-numpy==1.25.2
-scikit-learn==1.3.2
-matplotlib==3.8.0
-seaborn==0.12.3
-joblib
-```
+# ----------------------------
+# Hand Tracking & Computer Vision
+# ----------------------------
+mediapipe==0.10.32
+opencv-python==4.11.0
 
+# ----------------------------
+# Data Handling
+# ----------------------------
+pandas==2.0.3
+numpy==1.26.4
+
+# ----------------------------
+# Machine Learning
+# ----------------------------
+scikit-learn==1.1.3
+joblib==1.2.0
+
+# ----------------------------
+# Visualization
+# ----------------------------
+matplotlib==3.9.4
+seaborn==0.12.2
+```
 ---
 
 ## Usage
-
 1. **Prepare your dataset**:
-
    * Video or images of hand gestures.
    * Extract landmarks using MediaPipe Hands.
    * Flatten landmarks to `[x1, y1, z1, ..., x21, y21, z21]`.
@@ -101,17 +111,19 @@ y_pred = pipeline.predict(new_hand_landmarks)
 project/
 │
 ├─ models/                        # Saved trained pipelines
-│   ├─ RandomForest_pipeline.pkl
-│   ├─ SVM_pipeline.pkl
-│   ├─ models/KNN_pipeline.pkl
+│   ├─ RandomForest.pkl
+│   ├─ SVM.pkl
+│   ├─ KNN.pkl
 │
 ├─ models/confusion_matrices/     # Saved confusion matrix images
 │   ├─ RandomForest_confusion_matrix.png
 │   ├─ SVM_confusion_matrix.png
 │   ├─ KNN_confusion_matrix.png
 │
-├─ data/                          # images dataset
-├─ hand_gesture.ipynb             # Jupyter Notebook for preprocessing, training, and evaluating hand gesture models
+├─ data/                          # Input videos/images dataset
+├─ output/                        # Generated videos with landmark overlay & predictions
+│   ├─ output_video.mp4
+├─ hand_gesture.ipynb             # Notebook for preprocessing, training, evaluation & video output
 ├─ requirements.txt               # Project dependencies
 └─ README.md
 ```
