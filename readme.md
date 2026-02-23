@@ -1,148 +1,171 @@
-
-# Hand Gesture Classification Project
+# Hand Gesture Classification Project – Researcher Branch
 
 ## Overview
 
-This project implements a **hand gesture recognition system** using machine learning. It uses **MediaPipe Hands** to extract 21 hand landmarks from video frames and classifies gestures with different ML models such as **RandomForest, SVM, and KNN**. The project evaluates model performance and saves both trained models and confusion matrices for analysis.
+This branch focuses on **experimental model training and evaluation** for hand gesture recognition. All experiments are tracked using **MLflow** to log:
+
+- Model parameters, metrics, and input examples  
+- Training and validation datasets  
+- Artifacts such as confusion matrices  
+- Registered models in the MLflow Model Registry  
+
+This branch is intended for **research and experimentation** before merging stable models into `main`.
 
 ---
 
 ## Features
 
-* Extract **21 hand landmarks** (x, y, z) per hand using MediaPipe.
+* Extract **21 hand landmarks** (x, y, z) per hand using MediaPipe Hands.
 * Flatten landmarks into **63 features** for ML models.
 * Train and evaluate multiple models:
-
-  * **RandomForestClassifier**
-  * **SVM (Support Vector Machine)**
-  * **K-Nearest Neighbors (KNN)**
-* Compute evaluation metrics:
-
-  * Accuracy, Precision, Recall, F1-Score
-* Generate and **save confusion matrices** for each model.
-* Save trained **model pipelines** for future use.
-
----
-
-## Installation
-
-1. Clone the repository:
-
-```bash
-git clone <your-repo-url>
-cd <your-project-folder>
-```
-
-2. Create a virtual environment and activate it (optional but recommended):
-
-```bash
-python -m venv env
-# Windows
-env\Scripts\activate
-# Mac/Linux
-source env/bin/activate
-```
-
-3. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-**Example requirements.txt**:
-
-```
-mediapipe
-opencv-python
-pandas==2.1.1
-numpy==1.25.2
-scikit-learn==1.3.2
-matplotlib==3.8.0
-seaborn==0.12.3
-joblib
-```
-
----
-
-## Usage
-
-1. **Prepare your dataset**:
-
-   * Video or images of hand gestures.
-   * Extract landmarks using MediaPipe Hands.
-   * Flatten landmarks to `[x1, y1, z1, ..., x21, y21, z21]`.
-
-2. **Train models and evaluate**:
- 
-Open the notebook hand_gesture.ipynb in Jupyter Notebook and run the cells sequentially.
-
-The notebook will:
-* Preprocess the landmarks: recenter using the wrist and normalize based on finger length.
-* Encode labels: convert gesture names into numeric labels.
-* Train all models in your `models` dictionary (**RandomForest, SVM, GradientBoosting**).
-* Compute metrics.
-* Save **trained pipelines** in `../models/`.
-* Save **confusion matrices** in `../models/confusion_matrices/`.
-
-3. **Predict new gestures**:
-
-```python
-import joblib
-
-pipeline = joblib.load("../models/RandomForest_pipeline.pkl")
-y_pred = pipeline.predict(new_hand_landmarks)
-```
+  * RandomForestClassifier
+  * SVM (Support Vector Machine)
+  * K-Nearest Neighbors (KNN)
+* Compute evaluation metrics: Accuracy, Precision, Recall, F1-Score
+* Generate and **save confusion matrices** for each model
+* Log experiments with **MLflow**, including:
+  * Parameters
+  * Metrics
+  * Datasets (training)
+  * Artifacts such as confusion matrices and encoder file
+* Save trained **model pipelines**
+* Register the **best performing model** in the MLflow Model Registry
 
 ---
 
 ## Folder Structure
-
-```
 project/
 │
-├─ models/                        # Saved trained pipelines
-│   ├─ RandomForest_pipeline.pkl
-│   ├─ SVM_pipeline.pkl
-│   ├─ models/KNN_pipeline.pkl
+├─ models/                     # Saved trained pipelines
+│  ├─ RandomForest_pipeline.pkl
+│  ├─ SVM_pipeline.pkl
+│  ├─ KNN_pipeline.pkl
 │
-├─ models/confusion_matrices/     # Saved confusion matrix images
-│   ├─ RandomForest_confusion_matrix.png
-│   ├─ SVM_confusion_matrix.png
-│   ├─ KNN_confusion_matrix.png
+├─ models/confusion_matrices/  # Confusion matrix images
+│  ├─ RandomForest_confusion_matrix.png
+│  ├─ SVM_confusion_matrix.png
+│  ├─ KNN_confusion_matrix.png
 │
-├─ data/                          # images dataset
-├─ hand_gesture.ipynb             # Jupyter Notebook for preprocessing, training, and evaluating hand gesture models
-├─ requirements.txt               # Project dependencies
+├─ data/                       # Image dataset
+├─ notebook/                    # Notebooks
+│  └─ hand_gesture.ipynb
+├─ MLflow_results/              # MLflow run artifacts and model comparison images
+│  ├─ matrix_comparison_table.png
+│  ├─ sorted_model(f1score).png
+│  └─ (other MLflow run images)
+├─ src/                        # Python scripts (e.g., MLflow utilities)
+├─ requirements.txt             # Project dependencies
 └─ README.md
-```
 
 ---
 
-## Results
+## MLflow Tracking
 
-* Each model prints a **classification report** with accuracy, precision, recall, and F1-score.
-* Confusion matrices are visualized and saved for analysis, helping to identify misclassified gestures.
-* Trained models can be reused for predicting new hand gestures.
-Confusion Matrices
+* **Experiment Name:** `Hand_Gesture_Classification_Exp`  
+* **Run Names:** Descriptive names like `KNN_Model_Run`, `SVM_Model_Run`  
+* **Registered Model Name:** `HandGesture_Classifier`  
+* **Artifacts Tracked:** Confusion matrices, model pipelines, input examples  
+* **Metrics Tracked:** Accuracy, Precision, Recall, F1-Score  
+* **Datasets Logged:** Training datasets for reproducibility  
 
-RandomForest:
-![RandomForest Confusion Matrix](models/confusion_matrices/RandoForest_confusion_matrix.png)  
+All runs, metrics, artifacts, and model registrations are tracked in MLflow to allow easy comparison and selection of the best model.
+---
+# Model Development and Selection
 
-SVM:
+## Model Configurations
+
+To determine the best-performing classifier for hand gesture recognition, two configurations were evaluated for each algorithm.
+
+### Initial Configuration
+
+models = {
+    "RandomForest": RandomForestClassifier(n_estimators=100, random_state=42),
+    "SVM": SVC(kernel='rbf', C=10, gamma=0.1, random_state=42),
+    "KNN": KNeighborsClassifier(n_neighbors=5)
+}
+
+### Tuned Configuration
+
+models = {
+    "RandomForest": RandomForestClassifier(n_estimators=100, max_depth=8, random_state=42),
+    "SVM": SVC(kernel='rbf', C=10, gamma=0.01, random_state=42),
+    "KNN": KNeighborsClassifier(n_neighbors=7)
+}
+
+## Evaluation Strategy
+
+The dataset was split using a 60/20/20 strategy:
+
+* 60% Training
+* 20% Validation
+* 20% Testing
+
+Models were evaluated using:
+
+* Accuracy
+* Precision
+* Recall
+* F1-Score (Primary Selection Metric)
+* Confusion Matrix
+* Multi-class ROC Curve
+
+## Final Model Selection
+
+After comparing all models using validation metrics and MLflow visualizations:
+
+* The best-performing model was Support Vector Machine (SVM)
+* Kernel: RBF
+* C = 10
+* Gamma = 0.1
+
+This configuration achieved the highest validation F1-score, indicating strong generalization performance and balanced precision-recall across gesture classes.
+
+All experiments, metrics, and artifacts were tracked using MLflow to ensure reproducibility and transparent model comparison.
+
+---
+
+## Results (Research Branch)
+
+### Confusion Matrices
+
+**RandomForest**  
+![RandomForest Confusion Matrix](models/confusion_matrices/RandomForest_confusion_matrix.png)  
+
+**SVM**  
 ![SVM Confusion Matrix](models/confusion_matrices/SVM_confusion_matrix.png)  
 
+**KNN**  
+![KNN Confusion Matrix](models/confusion_matrices/KNN_confusion_matrix.png)  
 
-KNN:
-![GradientBoosting Confusion Matrix](models/confusion_matrices/KNN_confusion_matrix.png)  
+---
 
-Model Comparison
-| Model        | Accuracy | Precision | Recall | F1-Score |
-| ------------ | -------- | --------- | ------ | -------- |
-| RandomForest | 0.9759   | 0.9761    | 0.9759 | 0.9759   |
-| SVM          | 0.9823   | 0.9826    | 0.9823 | 0.9823   |
-| KNN          | 0.9566   | 0.9573    | 0.9566 | 0.9566   |
+### Model Comparison
+
+**Models Comparison Table**  
+
+![Models Comparison Table](MLflow_Results/matrix_comparison_table.png)  
+
+
+> These metrics are logged via MLflow for all runs, allowing you to track experiments, compare models, and select the best-performing model for registration.
+---
+
+**Best Model – F1 Score**
+**SVM (RBF, gamma=0.1)**
+![Best Model – F1 Score](MLflow_Results/sorted_model(f1score).png)  
+
+**registered model**
+![registered model](MLflow_Results/registered_model.png)
+
+---
+
+## Notes for Research Branch
+
+* All MLflow experiments and model registrations happen on the `researcher` branch.  
+* Use descriptive run names to track experiments effectively.  
+* This branch is for experimentation; stable models should be merged into `main` after validation.  
+
+---
 
 ## License
 
 This project is released under the **MIT License**.
-

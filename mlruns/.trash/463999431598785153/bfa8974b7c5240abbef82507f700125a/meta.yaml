@@ -1,0 +1,15 @@
+artifact_uri: file:///c:\Users\merna\Desktop\Hand_Gesture_Classification\mlruns/463999431598785153/bfa8974b7c5240abbef82507f700125a/artifacts
+deleted_time: 1771851017403
+end_time: 1771850447743
+entry_point_name: ''
+experiment_id: '463999431598785153'
+lifecycle_stage: deleted
+run_id: bfa8974b7c5240abbef82507f700125a
+run_name: RandomForest_Model_Run
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771850440497
+status: 3
+tags: []
+user_id: merna

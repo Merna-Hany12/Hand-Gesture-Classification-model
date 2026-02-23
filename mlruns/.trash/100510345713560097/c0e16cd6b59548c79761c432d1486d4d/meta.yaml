@@ -1,0 +1,15 @@
+artifact_uri: file:///c:\Users\merna\Desktop\Hand_Gesture_Classification\mlruns/100510345713560097/c0e16cd6b59548c79761c432d1486d4d/artifacts
+deleted_time: 1771851012884
+end_time: 1771845405406
+entry_point_name: ''
+experiment_id: '100510345713560097'
+lifecycle_stage: deleted
+run_id: c0e16cd6b59548c79761c432d1486d4d
+run_name: SVM_Model_Run
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771845400285
+status: 3
+tags: []
+user_id: merna

@@ -1,64 +1,68 @@
+import os
+import numpy as np
+import pandas as pd
 import mlflow
 import mlflow.sklearn
-import os
 import mlflow.data
-import pandas as pd
-import numpy as np
-# --------- Set Tracking Directory Outside Notebooks ---------
+from mlflow.tracking import MlflowClient
 
-# Project root (one level above src/)
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
+# Setup tracking
+BASE_DIR = os.path.abspath(os.path.join(os.getcwd(), ".."))
 MLRUNS_PATH = os.path.join(BASE_DIR, "mlruns")
-
-# Create mlruns folder if it doesn't exist
 os.makedirs(MLRUNS_PATH, exist_ok=True)
-
-# IMPORTANT: Set tracking URI BEFORE using MLflow
 mlflow.set_tracking_uri(f"file:///{MLRUNS_PATH}")
-
-
-# --------- Experiment Setup ---------
 
 def setup_experiment(experiment_name):
     mlflow.set_experiment(experiment_name)
 
-
-# --------- Start Model Run ---------
-
-def start_model_run(run_name,model,params,metrics,artifacts=None,input_example=None,X_train=None,y_train=None,X_test=None,y_test=None):
+def start_model_run(run_name, model, params, metrics, artifacts=None, X_train=None, y_train=None):
     with mlflow.start_run(run_name=run_name):
-
+        # Log params & metrics
         mlflow.log_params(params)
-        mlflow.log_metrics(metrics)
+        mlflow.log_metrics({k: float(v) for k, v in metrics.items()})
+        # Log model with input example
+        input_example = X_train[:5] if X_train is not None else None
+        mlflow.sklearn.log_model(sk_model=model, artifact_path="model", input_example=input_example)
 
-        mlflow.sklearn.log_model(
-            sk_model=model,
-            name="model",
-            input_example=input_example
-        )
-
+        # Log artifacts (Confusion Matrix)
         if artifacts:
             for artifact in artifacts:
                 if os.path.exists(artifact):
-                    mlflow.log_artifact(artifact)
-                else:
-                    print(f"WARNING: Artifact not found: {artifact}")
-
+                    # Put PNGs in 'plots', everything else in 'artifacts'
+                    folder = "plots" if artifact.endswith(".png") else "artifacts"
+                    mlflow.log_artifact(artifact, artifact_path=folder)
+        # Log Dataset context
         if X_train is not None and y_train is not None:
-            y_train_series = pd.Series(y_train, name="label") if isinstance(y_train, np.ndarray) else y_train.rename("label")
-            train_df = pd.concat([pd.DataFrame(X_train), y_train_series], axis=1)
+            dataset = mlflow.data.from_pandas(pd.concat([pd.DataFrame(X_train), pd.Series(y_train, name="label")], axis=1), name="gesture_train_set")
+            mlflow.log_input(dataset, context="training")
 
-            train_dataset = mlflow.data.from_pandas(
-                train_df,
-                source="hand_landmarks_data.csv",
-                name="train_data"
-            )
-            mlflow.log_input(train_dataset, context="training")
+def register_best_model(experiment_name, metric_name="val_accuracy", registered_model_name="HandGestureClassifier2"):
+    client = MlflowClient()
+    experiment = mlflow.get_experiment_by_name(experiment_name)
+    if experiment is None:
+        raise ValueError(f"Experiment '{experiment_name}' not found.")
 
-def register_model(model_name):
-    run_id = mlflow.active_run().info.run_id
-    mlflow.register_model(
-        model_uri=f"runs:/{run_id}/model",
-        name=model_name
+    runs = mlflow.search_runs(
+        experiment_ids=[experiment.experiment_id],
+        order_by=[f"metrics.{metric_name} DESC"]
     )
+
+    if runs.empty:
+        raise ValueError("No runs found in this experiment.")
+
+    best_run_id = runs.iloc[0]["run_id"]
+    model_uri = f"runs:/{best_run_id}/model"
+
+    result = mlflow.register_model(model_uri=model_uri, name=registered_model_name)
+
+    # Stage transition (optional, ignore warnings)
+    try:
+        client.transition_model_version_stage(
+            name=registered_model_name,
+            version=result.version,
+            stage="Production"
+        )
+    except Exception as e:
+        print("Warning: could not transition model stage due to serialization:", e)
+
+    return best_run_id

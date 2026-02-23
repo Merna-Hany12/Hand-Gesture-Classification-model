@@ -1,0 +1,15 @@
+artifact_uri: file:///c:\Users\merna\Desktop\Hand_Gesture_Classification\mlruns/100510345713560097/123b60c2c7ea42f5be41ef34f3d29580/artifacts
+deleted_time: 1771792360452
+end_time: 1771792291266
+entry_point_name: ''
+experiment_id: '100510345713560097'
+lifecycle_stage: deleted
+run_id: 123b60c2c7ea42f5be41ef34f3d29580
+run_name: KNN_Model_Run
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771792286380
+status: 3
+tags: []
+user_id: merna
