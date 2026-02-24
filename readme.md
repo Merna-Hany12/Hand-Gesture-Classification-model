@@ -33,31 +33,6 @@ This branch is intended for **research and experimentation** before merging stab
 
 ---
 
-## Folder Structure
-project/
-│
-├─ models/                     # Saved trained pipelines
-│  ├─ RandomForest_pipeline.pkl
-│  ├─ SVM_pipeline.pkl
-│  ├─ KNN_pipeline.pkl
-│
-├─ models/confusion_matrices/  # Confusion matrix images
-│  ├─ RandomForest_confusion_matrix.png
-│  ├─ SVM_confusion_matrix.png
-│  ├─ KNN_confusion_matrix.png
-│
-├─ data/                       # Image dataset
-├─ notebook/                    # Notebooks
-│  └─ hand_gesture.ipynb
-├─ MLflow_results/              # MLflow run artifacts and model comparison images
-│  ├─ matrix_comparison_table.png
-│  ├─ sorted_model(f1score).png
-│  └─ (other MLflow run images)
-├─ src/                        # Python scripts (e.g., MLflow utilities)
-├─ requirements.txt             # Project dependencies
-└─ README.md
-
----
 
 ## MLflow Tracking
 
