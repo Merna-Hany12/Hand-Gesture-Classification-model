@@ -18,3 +18,11 @@ venv/
 # OS-specific files
 .DS_Store
 Thumbs.db
+# Ignore sample input video
+data/Sample.mp4
+
+# Ignore all generated output videos
+output/
+
+# Or ignore only mp4 files inside output
+# output/*.mp4
