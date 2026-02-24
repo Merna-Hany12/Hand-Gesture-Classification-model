@@ -6,7 +6,6 @@ import mlflow.sklearn
 import mlflow.data
 from mlflow.tracking import MlflowClient
 
-# Setup tracking
 BASE_DIR = os.path.abspath(os.path.join(os.getcwd(), ".."))
 MLRUNS_PATH = os.path.join(BASE_DIR, "mlruns")
 os.makedirs(MLRUNS_PATH, exist_ok=True)
@@ -17,21 +16,16 @@ def setup_experiment(experiment_name):
 
 def start_model_run(run_name, model, params, metrics, artifacts=None, X_train=None, y_train=None):
     with mlflow.start_run(run_name=run_name):
-        # Log params & metrics
         mlflow.log_params(params)
         mlflow.log_metrics({k: float(v) for k, v in metrics.items()})
-        # Log model with input example
         input_example = X_train[:5] if X_train is not None else None
-        mlflow.sklearn.log_model(sk_model=model, artifact_path="model", input_example=input_example)
+        mlflow.sklearn.log_model(sk_model=model, name="model", input_example=input_example)
 
-        # Log artifacts (Confusion Matrix)
         if artifacts:
             for artifact in artifacts:
                 if os.path.exists(artifact):
-                    # Put PNGs in 'plots', everything else in 'artifacts'
                     folder = "plots" if artifact.endswith(".png") else "artifacts"
                     mlflow.log_artifact(artifact, artifact_path=folder)
-        # Log Dataset context
         if X_train is not None and y_train is not None:
             dataset = mlflow.data.from_pandas(pd.concat([pd.DataFrame(X_train), pd.Series(y_train, name="label")], axis=1), name="gesture_train_set")
             mlflow.log_input(dataset, context="training")
@@ -54,8 +48,6 @@ def register_best_model(experiment_name, metric_name="val_accuracy", registered_
     model_uri = f"runs:/{best_run_id}/model"
 
     result = mlflow.register_model(model_uri=model_uri, name=registered_model_name)
-
-    # Stage transition (optional, ignore warnings)
     try:
         client.transition_model_version_stage(
             name=registered_model_name,
