@@ -2,14 +2,12 @@
 
 ## Overview
 
-This branch focuses on **experimental model training and evaluation** for hand gesture recognition. All experiments are tracked using **MLflow** to log:
+This branch focuses on **experimental model training and evaluation** for hand gesture recognition. the experiment is tracked using **MLflow** to log:
 
 - Model parameters, metrics, and input examples  
 - Training and validation datasets  
 - Artifacts such as confusion matrices  
 - Registered models in the MLflow Model Registry  
-
-This branch is intended for **research and experimentation** before merging stable models into `main`.
 
 ---
 
@@ -52,21 +50,51 @@ All runs, metrics, artifacts, and model registrations are tracked in MLflow to a
 To determine the best-performing classifier for hand gesture recognition, two configurations were evaluated for each algorithm.
 
 ### Initial Configuration
+```python
 
 models = {
     "RandomForest": RandomForestClassifier(n_estimators=100, random_state=42),
     "SVM": SVC(kernel='rbf', C=10, gamma=0.1, random_state=42),
     "KNN": KNeighborsClassifier(n_neighbors=5)
 }
+```
 
 ### Tuned Configuration
 
+## Model Parameter Tuning & MLflow Logging
+
+This project allows experimentation with **different hyperparameters** for each machine learning model. In the notebook, the models are defined as follows:
+
+```python
 models = {
     "RandomForest": RandomForestClassifier(n_estimators=100, max_depth=8, random_state=42),
-    "SVM": SVC(kernel='rbf', C=10, gamma=0.01, random_state=42),
+    "SVM": SVC(kernel='rbf', C=100, gamma=0.1, random_state=42),
     "KNN": KNeighborsClassifier(n_neighbors=7)
 }
+```
 
+### What This Means
+
+* You can **adjust parameters** such as:
+
+  * RandomForest: `n_estimators`, `max_depth`
+  * SVM: `C`, `gamma`
+  * KNN: `n_neighbors`
+* Each combination of parameters is **tested** to find the best-performing configuration.
+* These experiments are **logged using MLflow**, which records:
+
+  * Model type and hyperparameters
+  * Validation metrics (Accuracy, Precision, Recall, F1-Score)
+  * Trained model artifacts
+  * Confusion matrices
+
+### Benefits
+
+* **Experiment tracking**: Easily compare multiple parameter sets in MLflow UI.
+* **Performance analysis**: Quickly identify which parameters yield the best metrics.
+* **Reproducibility**: All experiments and trained models are saved for later use.
+
+---
 ## Evaluation Strategy
 
 The dataset was split using a 60/20/20 strategy:
@@ -90,10 +118,12 @@ After comparing all models using validation metrics and MLflow visualizations:
 
 * The best-performing model was Support Vector Machine (SVM)
 * Kernel: RBF
-* C = 10
+* C = 100
 * Gamma = 0.1
 
 This configuration achieved the highest validation F1-score, indicating strong generalization performance and balanced precision-recall across gesture classes.
+
+The RBF kernel enabled SVM to effectively capture non-linear relationships within the 63-dimensional landmark feature space, leading to superior class separation compared to other models.
 
 All experiments, metrics, and artifacts were tracked using MLflow to ensure reproducibility and transparent model comparison.
 
@@ -101,7 +131,13 @@ All experiments, metrics, and artifacts were tracked using MLflow to ensure repr
 
 ## Results (Research Branch)
 
-### Confusion Matrices
+### Confusion Matrices (Final Tuned Models)
+
+The displayed confusion matrices were generated using the final tuned configurations:
+
+* RandomForestClassifier (n_estimators=100, max_depth=8, random_state=42)
+* SVC (RBF kernel, C=100, gamma=0.1, random_state=42)
+* KNeighborsClassifier (n_neighbors=7)
 
 **RandomForest**  
 ![RandomForest Confusion Matrix](models/confusion_matrices/RandomForest_confusion_matrix.png)  
@@ -118,28 +154,46 @@ All experiments, metrics, and artifacts were tracked using MLflow to ensure repr
 
 **Models Comparison Table**  
 
-![Models Comparison Table](MLflow_Results/matrix_comparison_table.png)  
+![Models Comparison Table](MLflow_Results/metrics_comparison_table.png)  
 
 
 > These metrics are logged via MLflow for all runs, allowing you to track experiments, compare models, and select the best-performing model for registration.
 ---
 
 **Best Model – F1 Score**
-**SVM (RBF, gamma=0.1)**
-![Best Model – F1 Score](MLflow_Results/sorted_model(f1score).png)  
+**SVM (RBF,c=100, gamma=0.1)**
+![Best Model – F1 Score](MLflow_Results/sorted_models(f1score).png)  
 
-**registered model**
+**Registered Model**
 ![registered model](MLflow_Results/registered_model.png)
 
 ---
 
-## Notes for Research Branch
+## MLflow Hyperparameter Experiments
 
-* All MLflow experiments and model registrations happen on the `researcher` branch.  
-* Use descriptive run names to track experiments effectively.  
-* This branch is for experimentation; stable models should be merged into `main` after validation.  
+All models were trained with **multiple hyperparameter configurations** and logged using **MLflow**. This allows tracking each run, visualizing metrics, and comparing different configurations.
 
----
+### Experiment Setup
+
+* Each model type (**RandomForest, SVM, KNN**) was trained with **4 different hyperparameter sets**.
+* Hyperparameters such as `n_estimators`, `max_depth`, `C`, `gamma`, and `n_neighbors` were varied.
+* Metrics logged: **Validation Accuracy, Precision, Recall, F1-Score**.
+* Trained models and confusion matrices were saved as artifacts in MLflow.
+
+### Visual Comparison
+
+The following MLflow parallel coordinates plot shows the effect of `max_depth` and `n_estimators` on **RandomForest validation accuracy** across 4 different runs:
+
+![RandomForest MLflow Runs](MLflow_Results/comparison_between_randomforest_accuracy_vs_params.png)
+
+> Similar logging and comparisons were performed for **SVM** (varying `C` and `gamma`) and **KNN** (varying `n_neighbors`).
+
+![SVM MLflow Runs](MLflow_Results/comparision_between_svm_(accuracy_vs_params).png)
+
+
+![KNN MLflow Runs](MLflow_Results/comparison_between_knn_(accuracy_vs_params).png)
+
+
 
 ## License
 

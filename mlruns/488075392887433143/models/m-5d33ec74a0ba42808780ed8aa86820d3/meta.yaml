@@ -1,0 +1,10 @@
+artifact_location: file:///c:\Users\merna\Desktop\Hand_Gesture_Classification\mlruns/488075392887433143/models/m-5d33ec74a0ba42808780ed8aa86820d3/artifacts
+creation_timestamp: 1772135116542
+experiment_id: '488075392887433143'
+last_updated_timestamp: 1772135120798
+model_id: m-5d33ec74a0ba42808780ed8aa86820d3
+model_type: null
+name: model
+source_run_id: 966d3c1404cb42ea9b769a730a34e873
+status: 2
+status_message: null
